@@ -19,22 +19,32 @@ public class CardService {
     private final CardRepository cardRepository;
 
     public void save(CardCreate cardCreate) {
-        cardRepository.findById(cardCreate.getKorName())
-                .ifPresentOrElse(null, () -> {
-                    Card card = Card.builder()
-                            .korName(cardCreate.getKorName())
-                            .engName(cardCreate.getEngName())
-                            .series(cardCreate.getSeries())
-                            .cost(cardCreate.getCost())
-                            .power(cardCreate.getPower())
-                            .build();
-                    cardRepository.save(card);
-                });
+//        cardRepository.findById(cardCreate.getEngName())
+//                .ifPresentOrElse(null, () -> {
+//                    Card card = Card.builder()
+//                            .korName(cardCreate.getKorName())
+//                            .engName(cardCreate.getEngName())
+//                            .series(cardCreate.getSeries())
+//                            .cost(cardCreate.getCost())
+//                            .power(cardCreate.getPower())
+//                            .build();
+//                    cardRepository.save(card);
+//                });
+
+        Card card = Card.builder()
+                .korName(cardCreate.getKorName())
+                .engName(cardCreate.getEngName())
+                .series(cardCreate.getSeries())
+                .cost(cardCreate.getCost())
+                .power(cardCreate.getPower())
+                .build();
+        cardRepository.save(card);
     }
 
     @PostConstruct
     public void register() {
         List<CardCreate> cards = new ArrayList<>();
+
         // 1풀
         cards.add(CardCreate.builder().engName("Gamora").korName("가모라").series(1).cost(5).power(7).build());
         cards.add(CardCreate.builder().engName("Groot").korName("그루트").series(1).cost(3).power(3).build());
@@ -108,7 +118,6 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Hawkeye").korName("호크아이").series(1).cost(1).power(1).build());
         cards.add(CardCreate.builder().engName("White Queen").korName("화이트 퀸").series(1).cost(4).power(6).build());
         cards.add(CardCreate.builder().engName("White Tiger").korName("화이트 타이거").series(1).cost(5).power(1).build());
-        System.out.println(cards.size());
 
         // 2풀
         cards.add(CardCreate.builder().engName("Nakia").korName("나키아").series(2).cost(3).power(1).build());
@@ -136,7 +145,6 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Cloak").korName("클록").series(2).cost(2).power(4).build());
         cards.add(CardCreate.builder().engName("Killmonger").korName("킬몽거").series(2).cost(3).power(3).build());
         cards.add(CardCreate.builder().engName("Hobgoblin").korName("홉고블린").series(2).cost(5).power(-8).build());
-        System.out.println(cards.size());
 
         // 3풀
         cards.add(CardCreate.builder().engName("Gambit").korName("갬빗").series(3).cost(3).power(1).build());
@@ -216,7 +224,6 @@ public class CardService {
         cards.add(CardCreate.builder().engName("The Hood").korName("후드").series(3).cost(1).power(-2).build());
         cards.add(CardCreate.builder().engName("Human Torch").korName("휴먼 토치").series(3).cost(1).power(2).build());
 
-        System.out.println(cards.size());
         // 4풀
         cards.add(CardCreate.builder().engName("She-Hulk").korName("쉬헐크").series(4).cost(6).power(10).build());
         cards.add(CardCreate.builder().engName("Titania").korName("티타니아").series(4).cost(1).power(5).build());
@@ -229,7 +236,6 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Maria Hill").korName("마리아 힐").series(4).cost(2).power(3).build());
         cards.add(CardCreate.builder().engName("M'Baku").korName("음바쿠").series(4).cost(1).power(2).build());
 
-        System.out.println(cards.size());
         // 5풀
         cards.add(CardCreate.builder().engName("Bast").korName("바스트").series(5).cost(1).power(1).build());
         cards.add(CardCreate.builder().engName("Galactus").korName("갤럭투스").series(5).cost(6).power(3).build());
@@ -238,12 +244,9 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Thanos").korName("타노스").series(5).cost(6).power(8).build());
         cards.add(CardCreate.builder().engName("Valkyrie").korName("발키리").series(5).cost(5).power(3).build());
 
-        System.out.println(cards.size());
         // 0풀
         cards.add(CardCreate.builder().engName("Miles Morales").korName("마일스 모랄레스").series(0).cost(4).power(5).build());
-        cards.add(CardCreate.builder().engName("Black Panther").korName("블랙 팬서").series(3).cost(5).power(4).build());
-
-        System.out.println(cards.size());
+        cards.add(CardCreate.builder().engName("Black Panther").korName("블랙 팬서").series(0).cost(5).power(4).build());
 
         cards.forEach(this::save);
     }

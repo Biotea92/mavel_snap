@@ -55,7 +55,7 @@ class CardServiceTest {
         // given
         CardCreate aero = CardCreate.builder()
                 .korName("에어로")
-                .engName("aero")
+                .engName("Aero")
                 .power(8)
                 .cost(5)
                 .series(3)
@@ -63,7 +63,7 @@ class CardServiceTest {
 
         // when
         cardService.save(aero);
-        Card 에어로 = cardRepository.findById("에어로").get();
+        Card 에어로 = cardRepository.findById("Aero").get();
 
         // then
         assertEquals("에어로", 에어로.getKorName());

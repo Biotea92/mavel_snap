@@ -12,10 +12,10 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PUBLIC)
 public class Card {
 
-    @Id
     @Column(length = 200, nullable = false)
     private String korName;
 
+    @Id
     @Column(length = 200, nullable = false)
     private String engName;
 
