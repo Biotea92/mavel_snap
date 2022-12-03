@@ -18,19 +18,7 @@ public class CardService {
 
     private final CardRepository cardRepository;
 
-    public void save(CardCreate cardCreate) {
-//        cardRepository.findById(cardCreate.getEngName())
-//                .ifPresentOrElse(null, () -> {
-//                    Card card = Card.builder()
-//                            .korName(cardCreate.getKorName())
-//                            .engName(cardCreate.getEngName())
-//                            .series(cardCreate.getSeries())
-//                            .cost(cardCreate.getCost())
-//                            .power(cardCreate.getPower())
-//                            .build();
-//                    cardRepository.save(card);
-//                });
-
+    public void saveCard(CardCreate cardCreate) {
         Card card = Card.builder()
                 .korName(cardCreate.getKorName())
                 .engName(cardCreate.getEngName())
@@ -38,6 +26,7 @@ public class CardService {
                 .cost(cardCreate.getCost())
                 .power(cardCreate.getPower())
                 .build();
+
         cardRepository.save(card);
     }
 
@@ -248,6 +237,6 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Miles Morales").korName("마일스 모랄레스").series(0).cost(4).power(5).build());
         cards.add(CardCreate.builder().engName("Black Panther").korName("블랙 팬서").series(0).cost(5).power(4).build());
 
-        cards.forEach(this::save);
+        cards.forEach(this::saveCard);
     }
 }

@@ -39,7 +39,7 @@ class CardServiceTest {
                 .build();
 
         // when
-        cardService.save(aero);
+        cardService.saveCard(aero);
 
         // then
         assertEquals(1L , cardRepository.count());
@@ -62,7 +62,7 @@ class CardServiceTest {
                 .build();
 
         // when
-        cardService.save(aero);
+        cardService.saveCard(aero);
         Card 에어로 = cardRepository.findById("Aero").get();
 
         // then
