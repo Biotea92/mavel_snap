@@ -5,6 +5,7 @@ import com.marvel.snap.domain.Post;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
+import com.marvel.snap.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,16 @@ public class PostService {
 
         Post post = postCreate.toEntity(cards, deckCode);
         postRepository.save(post);
+    }
+
+    public PostResponse get(Long id) {
+        Post post = postRepository.findById(id)
+                .orElseThrow(RuntimeException::new);
+
+        post.upHit();
+
+        return PostResponse.builder()
+                .post(post)
+                .build();
     }
 }

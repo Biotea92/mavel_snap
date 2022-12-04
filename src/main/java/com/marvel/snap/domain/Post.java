@@ -45,4 +45,8 @@ public class Post {
         this.disLikePost = disLikePost;
         this.cards = cards;
     }
+
+    public void upHit() {
+        this.hit = hit + 1;
+    }
 }
