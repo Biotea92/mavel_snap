@@ -76,7 +76,7 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Ironheart").korName("아이언하트").series(1).cost(3).power(0).build());
         cards.add(CardCreate.builder().engName("Apocalypse").korName("아포칼립스").series(1).cost(6).power(8).build());
         cards.add(CardCreate.builder().engName("Angela").korName("안젤라").series(1).cost(2).power(0).build());
-        cards.add(CardCreate.builder().engName("Ant-Man").korName("앤트맨").series(1).cost(1).power(1).build());
+        cards.add(CardCreate.builder().engName("Ant Man").korName("앤트맨").series(1).cost(1).power(1).build());
         cards.add(CardCreate.builder().engName("Abomination").korName("어보미네이션").series(1).cost(5).power(9).build());
         cards.add(CardCreate.builder().engName("Angel").korName("엔젤").series(1).cost(1).power(2).build());
         cards.add(CardCreate.builder().engName("Elektra").korName("엘렉트라").series(1).cost(1).power(1).build());
@@ -237,6 +237,7 @@ public class CardService {
         cards.add(CardCreate.builder().engName("Miles Morales").korName("마일스 모랄레스").series(0).cost(4).power(5).build());
         cards.add(CardCreate.builder().engName("Black Panther").korName("블랙 팬서").series(0).cost(5).power(4).build());
 
+        System.out.println("done");
         cards.forEach(this::saveCard);
     }
 }
