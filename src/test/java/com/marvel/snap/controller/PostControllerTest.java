@@ -1,6 +1,9 @@
 package com.marvel.snap.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.marvel.snap.domain.Card;
+import com.marvel.snap.domain.Post;
+import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,7 +14,12 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -28,6 +36,9 @@ class PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private CardRepository cardRepository;
 
     @BeforeEach
     void clean() {
@@ -107,6 +118,39 @@ class PostControllerTest {
                         .content(json)
                 )
                 .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 단건 조회")
+    void test3() throws Exception {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        Post post = Post.builder()
+                .writer("비비")
+                .password("1234")
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                .hit(0)
+                .likePost(0)
+                .disLikePost(0)
+                .cards(cards)
+                .build();
+        postRepository.save(post);
+
+        // expected
+        mockMvc.perform(get("/posts/{postId}", post.getId())
+                        .contentType(APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(post.getId()))
+                .andExpect(jsonPath("$.writer").value("비비"))
+                .andExpect(jsonPath("$.title").value("제목입니다."))
+                .andExpect(jsonPath("$.content").value("내용입니다."))
                 .andDo(print());
     }
 }
