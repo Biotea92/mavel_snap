@@ -5,6 +5,7 @@ import com.marvel.snap.domain.Post;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
+import com.marvel.snap.request.PostsPage;
 import com.marvel.snap.response.PostResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,6 +17,7 @@ import javax.transaction.Transactional;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -119,5 +121,42 @@ class PostServiceTest {
         assertEquals(0, response.getLike());
         assertEquals(0, response.getDisLike());
         assertEquals(1, response.getHit());
+    }
+
+    @Test
+    @DisplayName("글 1페이지 조회")
+    void getList() {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        List<Post> requestPosts = IntStream.range(0, 20)
+                .mapToObj(i -> Post.builder()
+                       .writer("비비" + i)
+                       .password("1234")
+                       .title("제목입니다." + i)
+                       .content("내용입니다." + i)
+                       .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                       .hit(0)
+                       .likePost(0)
+                       .disLikePost(0)
+                       .cards(cards)
+                       .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+        PostsPage postsPage = PostsPage.builder()
+                .page(1)
+                .size(10)
+                .build();
+
+        // when
+        List<PostResponse> posts = postService.getList(postsPage);
+
+        // then
+        assertEquals(10L, posts.size());
+        assertEquals("비비19", posts.get(0).getWriter());
     }
 }
