@@ -2,6 +2,8 @@ package com.marvel.snap.service;
 
 import com.marvel.snap.domain.Card;
 import com.marvel.snap.domain.Post;
+import com.marvel.snap.exception.InvalidRequest;
+import com.marvel.snap.exception.PostNotFound;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
@@ -19,8 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class PostServiceTest {
@@ -158,5 +159,90 @@ class PostServiceTest {
         // then
         assertEquals(10L, posts.size());
         assertEquals("비비19", posts.get(0).getWriter());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제")
+    void delete() {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        Post post = Post.builder()
+                .writer("비비")
+                .password("1234")
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                .hit(0)
+                .likePost(0)
+                .disLikePost(0)
+                .cards(cards)
+                .build();
+        postRepository.save(post);
+
+        // when
+        postService.delete(post.getId(), post.getPassword());
+
+        // then
+        assertEquals(0, postRepository.count());
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 존재하지 않는 글")
+    void deleteNotFound() {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        Post post = Post.builder()
+                .writer("비비")
+                .password("1234")
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                .hit(0)
+                .likePost(0)
+                .disLikePost(0)
+                .cards(cards)
+                .build();
+        postRepository.save(post);
+
+        // expected
+        assertThrows(PostNotFound.class, () -> {
+            postService.delete(post.getId() + 1L, post.getPassword());
+        });
+    }
+
+    @Test
+    @DisplayName("게시글 삭제 - 비밀번호 불일치")
+    void deletePasswordIssue() {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        Post post = Post.builder()
+                .writer("비비")
+                .password("1234")
+                .title("제목입니다.")
+                .content("내용입니다.")
+                .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                .hit(0)
+                .likePost(0)
+                .disLikePost(0)
+                .cards(cards)
+                .build();
+        postRepository.save(post);
+
+        // expected
+        assertThrows(InvalidRequest.class, () -> {
+            postService.delete(post.getId(), "1111");
+        });
     }
 }
