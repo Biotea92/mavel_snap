@@ -30,7 +30,8 @@ public class Post {
     private int likePost;
     private int disLikePost;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany
+    @JoinColumn(name = "card_eng_name")
     private List<Card> cards = new ArrayList<>();
 
     @Builder
