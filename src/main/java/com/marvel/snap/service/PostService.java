@@ -64,12 +64,13 @@ public class PostService {
 
     @Transactional
     public void delete(Long id, String password) {
-        postRepository.findById(id)
-                .ifPresentOrElse(p -> {
-                    if (!p.getPassword().equals(password)) {
-                        throw new InvalidRequest("password" , "패스워드가 일치하지 않습니다.");
-                    }
-                    postRepository.delete(p);
-                },PostNotFound::new);
+        Post post = postRepository.findById(id)
+                .orElseThrow(PostNotFound::new);
+
+        if (!post.getPassword().equals(password)) {
+            throw new InvalidRequest("password" , "패스워드가 일치하지 않습니다.");
+        }
+
+        postRepository.delete(post);
     }
 }
