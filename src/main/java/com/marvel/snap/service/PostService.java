@@ -5,6 +5,7 @@ import com.marvel.snap.domain.Post;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
+import com.marvel.snap.request.PostsPage;
 import com.marvel.snap.response.PostResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -49,5 +50,11 @@ public class PostService {
         return PostResponse.builder()
                 .post(post)
                 .build();
+    }
+
+    public List<PostResponse> getList(PostsPage postsPage) {
+        return postRepository.getList(postsPage).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
     }
 }

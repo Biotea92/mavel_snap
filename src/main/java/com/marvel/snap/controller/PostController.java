@@ -1,6 +1,7 @@
 package com.marvel.snap.controller;
 
 import com.marvel.snap.request.PostCreate;
+import com.marvel.snap.request.PostsPage;
 import com.marvel.snap.response.PostResponse;
 import com.marvel.snap.service.PostService;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -24,5 +26,10 @@ public class PostController {
     @GetMapping("/posts/{postId}")
     public PostResponse get(@PathVariable Long postId) {
         return postService.get(postId);
+    }
+
+    @GetMapping("/posts")
+    public List<PostResponse> getList(@ModelAttribute PostsPage postsPage) {
+        return postService.getList(postsPage);
     }
 }
