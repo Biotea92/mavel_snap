@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -151,6 +152,70 @@ class PostControllerTest {
                 .andExpect(jsonPath("$.writer").value("비비"))
                 .andExpect(jsonPath("$.title").value("제목입니다."))
                 .andExpect(jsonPath("$.content").value("내용입니다."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 여러개 조회")
+    void test4() throws Exception {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        List<Post> requestPosts = IntStream.range(0, 20)
+                .mapToObj(i -> Post.builder()
+                        .writer("비비" + i)
+                        .password("1234")
+                        .title("제목입니다." + i)
+                        .content("내용입니다." + i)
+                        .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                        .hit(0)
+                        .likePost(0)
+                        .disLikePost(0)
+                        .cards(cards)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+        // expected
+        mockMvc.perform(get("/posts?page=1&size=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].writer").value("비비19"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("페이지 0 요청시 첫 페이지를 가져옴")
+    void test5() throws Exception {
+        // given
+        String cardList = "Ant Man,Iceman,Iron Fist,Korg,Nightcrawler,Angela,Armor,Mister Fantastic,Debrii,Ka-Zar,Blue Marvel,Doctor Doom";
+        List<Card> cards = Arrays.stream(cardList.split(","))
+                .map(str -> cardRepository.findById(str).orElseThrow(RuntimeException::new))
+                .collect(Collectors.toList());
+
+        List<Post> requestPosts = IntStream.range(0, 20)
+                .mapToObj(i -> Post.builder()
+                        .writer("비비" + i)
+                        .password("1234")
+                        .title("제목입니다." + i)
+                        .content("내용입니다." + i)
+                        .deckCode("eyJDYXJkcyI6W3siQ2FyZERlZklkIjoiSWNlbWFuIn0seyJDYXJkRGVmSWQiOiJJcm9uRmlzdCJ9LHsiQ2FyZERlZklkIjoiS29yZyJ9LHsiQ2FyZERlZklkIjoiTXJGYW50YXN0aWMifSx7IkNhcmREZWZJZCI6IkRlYnJpaSJ9LHsiQ2FyZERlZklkIjoiS2FaYXIifSx7IkNhcmREZWZJZCI6IkJsdWVNYXJ2ZWwifSx7IkNhcmREZWZJZCI6IkFudE1hbiJ9LHsiQ2FyZERlZklkIjoiTmlnaHRjcmF3bGVyIn0seyJDYXJkRGVmSWQiOiJBbmdlbGEifSx7IkNhcmREZWZJZCI6IkRyRG9vbSJ9LHsiQ2FyZERlZklkIjoiQXJtb3IifV19")
+                        .hit(0)
+                        .likePost(0)
+                        .disLikePost(0)
+                        .cards(cards)
+                        .build())
+                .collect(Collectors.toList());
+        postRepository.saveAll(requestPosts);
+
+        // expected
+        mockMvc.perform(get("/posts?page=0&size=10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].writer").value("비비19"))
                 .andDo(print());
     }
 }
