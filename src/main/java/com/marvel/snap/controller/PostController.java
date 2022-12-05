@@ -33,4 +33,9 @@ public class PostController {
     public List<PostResponse> getList(@ModelAttribute PostsPage postsPage) {
         return postService.getList(postsPage);
     }
+
+    @DeleteMapping("/posts/{postId}/{password}")
+    public void delete(@PathVariable Long postId, @PathVariable String password) {
+        postService.delete(postId, password);
+    }
 }

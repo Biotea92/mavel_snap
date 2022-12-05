@@ -2,6 +2,7 @@ package com.marvel.snap.service;
 
 import com.marvel.snap.domain.Card;
 import com.marvel.snap.domain.Post;
+import com.marvel.snap.exception.InvalidRequest;
 import com.marvel.snap.exception.PostNotFound;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +27,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final CardRepository cardRepository;
 
+    @Transactional
     public void write(PostCreate postCreate) {
         List<String> tmp = Arrays.stream(postCreate.getDeckCode().split("\n"))
                 .collect(Collectors.toList());
@@ -57,5 +60,16 @@ public class PostService {
         return postRepository.getList(postsPage).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void delete(Long id, String password) {
+        postRepository.findById(id)
+                .ifPresentOrElse(p -> {
+                    if (!p.getPassword().equals(password)) {
+                        throw new InvalidRequest("password" , "패스워드가 일치하지 않습니다.");
+                    }
+                    postRepository.delete(p);
+                },PostNotFound::new);
     }
 }
