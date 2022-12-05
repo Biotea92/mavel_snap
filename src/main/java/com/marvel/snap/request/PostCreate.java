@@ -50,4 +50,8 @@ public class PostCreate {
                 .cards(cards)
                 .build();
     }
+
+    public void validate() {
+
+    }
 }

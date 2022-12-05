@@ -2,6 +2,7 @@ package com.marvel.snap.service;
 
 import com.marvel.snap.domain.Card;
 import com.marvel.snap.domain.Post;
+import com.marvel.snap.exception.PostNotFound;
 import com.marvel.snap.repository.CardRepository;
 import com.marvel.snap.repository.PostRepository;
 import com.marvel.snap.request.PostCreate;
@@ -43,7 +44,7 @@ public class PostService {
 
     public PostResponse get(Long id) {
         Post post = postRepository.findById(id)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(PostNotFound::new);
 
         post.upHit();
 
