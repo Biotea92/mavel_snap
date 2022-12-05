@@ -62,6 +62,12 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
+    public List<PostResponse> getRecommendationList(PostsPage postsPage) {
+        return postRepository.getRecommendationList(postsPage).stream()
+                .map(PostResponse::new)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public void delete(Long id, String password) {
         Post post = postRepository.findById(id)

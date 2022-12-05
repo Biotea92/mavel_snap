@@ -34,6 +34,11 @@ public class PostController {
         return postService.getList(postsPage);
     }
 
+    @GetMapping("/RecommendPosts")
+    public List<PostResponse> getRecommendationList(@ModelAttribute PostsPage postsPage) {
+        return postService.getRecommendationList(postsPage);
+    }
+
     @DeleteMapping("/posts/{postId}/{password}")
     public void delete(@PathVariable Long postId, @PathVariable String password) {
         postService.delete(postId, password);

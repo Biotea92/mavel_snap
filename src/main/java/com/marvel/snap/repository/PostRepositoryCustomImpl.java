@@ -21,4 +21,14 @@ public class PostRepositoryCustomImpl implements PostRepositoryCustom{
                 .orderBy(QPost.post.id.desc())
                 .fetch();
     }
+
+    @Override
+    public List<Post> getRecommendationList(PostsPage postsPage) {
+        return jpaQueryFactory.selectFrom(QPost.post)
+                .where(QPost.post.hit.goe(10))
+                .limit(postsPage.getSize())
+                .offset(postsPage.getOffset())
+                .orderBy(QPost.post.id.desc())
+                .fetch();
+    }
 }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface PostRepositoryCustom {
     List<Post> getList(PostsPage postsPage);
+
+    List<Post> getRecommendationList(PostsPage postsPage);
 }
